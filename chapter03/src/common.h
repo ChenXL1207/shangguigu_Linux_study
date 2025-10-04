@@ -9,3 +9,7 @@
 #include <string.h>
 
 #include <sys/wait.h>
+#include <errno.h>
+#include <mqueue.h>
+
+#include <time.h>

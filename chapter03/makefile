@@ -35,6 +35,30 @@ $(BUILD_DIR)/%.out: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $<
 
+# 特殊规则：shared_memory 需要链接 -lrt
+$(BUILD_DIR)/shared_memory.out: $(SRC_DIR)/shared_memory.c
+	@echo "building $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $< -lrt
+
+# 特殊规则：father_son_mq_test 需要链接 -lrt
+$(BUILD_DIR)/father_son_mq_test.out: $(SRC_DIR)/father_son_mq_test.c
+	@echo "building $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $< -lrt
+
+# 特殊规则：product 需要链接 -lrt
+$(BUILD_DIR)/product.out: $(SRC_DIR)/product.c
+	@echo "building $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $< -lrt
+
+# 特殊规则：consumer 需要链接 -lrt
+$(BUILD_DIR)/consumer.out: $(SRC_DIR)/consumer.c
+	@echo "building $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $< -lrt
+
 # 清理 build 目录:
 clean:
 	@echo "clean..."
