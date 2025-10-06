@@ -13,3 +13,5 @@
 #include <mqueue.h>
 
 #include <time.h>
+
+#include <signal.h>
