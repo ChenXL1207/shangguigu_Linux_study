@@ -14,3 +14,5 @@
 #include <sys/wait.h>
 #include <semaphore.h> // 信号量
 
+#include <glib.h>
+
