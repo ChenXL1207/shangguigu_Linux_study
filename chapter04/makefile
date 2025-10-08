@@ -32,26 +32,26 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 # 智能链接库检测函数
 # 检查文件名是否包含特定关键词，并返回相应的链接库
 define get_libs
-$(if $(or $(findstring pthread,$(1)),$(findstring thread,$(1))),-lpthread)$(if $(or $(findstring shared_memory,$(1)),$(findstring mq,$(1)),$(findstring product,$(1)),$(findstring consumer,$(1))),-lrt)
+$(if $(or $(findstring pthread,$(1)),$(findstring thread,$(1))),-lpthread )$(if $(or $(findstring shared_memory,$(1)),$(findstring mq,$(1)),$(findstring product,$(1)),$(findstring consumer,$(1)),$(findstring process,$(1))),-lrt )
 endef
 
-# 检查文件内容是否包含pthread函数调用
+# 检查文件内容是否包含pthread函数调用或信号量函数
 define check_pthread_in_file
-$(shell grep -q "pthread_create\|pthread_join\|pthread_exit\|pthread_cancel\|pthread_detach\|pthread_testcancel" $(1) && echo "-lpthread")
+$(shell grep -q "pthread_create\|pthread_join\|pthread_exit\|pthread_cancel\|pthread_detach\|pthread_testcancel\|sem_init\|sem_post\|sem_wait\|sem_destroy" $(1) && echo "-lpthread")
 endef
 
-# 检查文件内容是否包含rt库函数调用
+# 检查文件内容是否包含rt库函数调用（进程间通信相关）
 define check_rt_in_file
-$(shell grep -q "shmget\|shmat\|shmdt\|mq_open\|mq_send\|mq_receive" $(1) && echo "-lrt")
+$(shell grep -q "shmget\|shmat\|shmdt\|mq_open\|mq_send\|mq_receive\|shm_open\|shm_unlink\|mmap\|munmap\|ftruncate" $(1) && echo "-lrt")
 endef
 
 # 通用规则：为每个源文件生成独立的可执行文件，自动检测并添加链接库
 $(BUILD_DIR)/%.out: $(SRC_DIR)/%.c
 	@echo "building $@..."
 	@mkdir -p $(dir $@)
-	@NAME_LIBS=$$(echo "$(call get_libs,$*)" | tr -d ' '); \
-	CONTENT_LIBS=$$(echo "$(call check_pthread_in_file,$<) $(call check_rt_in_file,$<)" | tr -d ' '); \
-	ALL_LIBS=$$(echo "$$NAME_LIBS $$CONTENT_LIBS" | tr -s ' ' | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/ $$//'); \
+	@NAME_LIBS=$$(echo "$(call get_libs,$*)"); \
+	CONTENT_LIBS=$$(echo "$(call check_pthread_in_file,$<) $(call check_rt_in_file,$<)"); \
+	ALL_LIBS=$$(echo "$$NAME_LIBS $$CONTENT_LIBS" | tr -s ' ' | tr ' ' '\n' | sort -u | grep -v '^$$' | tr '\n' ' ' | sed 's/ $$//'); \
 	if [ -n "$$ALL_LIBS" ]; then \
 		echo "  linking with: $$ALL_LIBS"; \
 		$(CC) $(CFLAGS) -o $@ $< $$ALL_LIBS; \
