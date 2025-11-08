@@ -10,6 +10,9 @@
 #include <stdlib.h> // 标准库
 #include <pthread.h> // 线程
 #include <signal.h> // 信号处理
+#include <time.h>      // time, ctime
+#include <fcntl.h>     // open
+#include <sys/stat.h>  // umask
 
 #define handle_error(cmd,result) \
     if(result<0){ \
